@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout title="Projects — TODO name" description="Project writeups.">
+  <h1>Projects</h1>
+  {/* TODO: a sentence framing what these writeups are. */}
+
+  {posts.length === 0 && <p class="muted">No published writeups yet.</p>}
+
+  <ul style="list-style: none; padding: 0;">
+    {
+      posts.map((post) => (
+        <li style="margin-bottom: var(--space-4);">
+          <a href={`/projects/${post.id}/`}>{post.data.title}</a>
+          <div class="muted" style="font-size: var(--text-sm);">
+            <time datetime={post.data.date.toISOString()}>
+              {post.data.date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </time>
+            {post.data.summary && <> — {post.data.summary}</>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

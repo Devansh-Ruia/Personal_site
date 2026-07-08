@@ -1,0 +1,20 @@
+[
+  {
+    "id": "antonyms-placeholder",
+    "task": "Antonyms (PLACEHOLDER)",
+    "description": "TODO: one line describing the task, e.g. 'Map a word to its opposite.'",
+    "contrast": {
+      "pairs": [
+        { "input": "hot", "output": "cold" },
+        { "input": "up", "output": "down" },
+        { "input": "fast", "output": "slow" }
+      ]
+    },
+    "probe": "light",
+    "unsteered": "TODO: paste the real model completion with NO function vector added.",
+    "steered": "TODO: paste the real model completion WITH the function vector added (e.g. 'dark').",
+    "layer": 0,
+    "strength": 0,
+    "notes": "PLACEHOLDER CASE. Replace every TODO with real extracted-vector data before shipping. Delete this note when done. See .claude/skills/precompute-fv."
+  }
+]
