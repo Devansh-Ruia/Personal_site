@@ -1,0 +1,6 @@
+interface:
+  display_name: 'New Post'
+  short_description: 'Scaffold a draft MDX project writeup'
+  default_prompt: 'Use $new-post to scaffold a draft project writeup from this title.'
+policy:
+  allow_implicit_invocation: false

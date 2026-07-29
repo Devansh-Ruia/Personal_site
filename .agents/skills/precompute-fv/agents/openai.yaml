@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Precompute FV'
+  short_description: 'Maintain function-vector demo case integrity'
+  default_prompt: 'Use $precompute-fv when adding or editing a function-vector demo case.'
+policy:
+  allow_implicit_invocation: false

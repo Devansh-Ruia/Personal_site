@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Check Site'
+  short_description: 'Run and report all site validation commands'
+  default_prompt: 'Use $check-site to run the Personal_site validation sequence.'
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Add FV Case'
+  short_description: 'Append a validated function-vector case'
+  default_prompt: 'Use $add-fv-case to add this measured function-vector case.'
+policy:
+  allow_implicit_invocation: false

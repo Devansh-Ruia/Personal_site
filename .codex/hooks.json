@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/format.mjs\"",
+            "commandWindows": "for /f \"delims=\" %i in ('git rev-parse --show-toplevel') do node \"%i/.codex/hooks/format.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
