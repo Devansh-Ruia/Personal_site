@@ -14,10 +14,13 @@ const projects = defineCollection({
   }),
 });
 
-// One reusable pair of ICL exemplars that define the task/function.
-const fvPair = z.object({
-  input: z.string(),
-  output: z.string(),
+// One probe item: the FV (steered) output next to the correct answer.
+const fvItem = z.object({
+  input: z.string(), // the bare probe query
+  fvOutput: z.string(), // what the function vector produced
+  expected: z.string(), // the correct answer
+  correct: z.boolean(),
+  failureMode: z.enum(['echo', 'near-miss', 'degenerate']).optional(), // on misses
 });
 
 // Precomputed function-vector cases. This is "the JSON" the author edits:
@@ -28,15 +31,10 @@ const fvCases = defineCollection({
   schema: z.object({
     id: z.string(), // slug, used as the dropdown option value
     task: z.string(), // display name, e.g. "Antonyms"
+    kind: z.enum(['works', 'half-works', 'breaks']), // the card framing
     description: z.string(), // one line: what this task/function is
-    contrast: z.object({
-      pairs: z.array(fvPair).min(1), // the exemplars that define the function
-    }),
-    probe: z.string(), // the query prompt shown to the model
-    unsteered: z.string(), // model output with no function vector added
-    steered: z.string(), // model output with the function vector added
-    layer: z.number().optional(), // layer the vector was extracted/added at
-    strength: z.number().optional(), // steering coefficient
+    items: z.array(fvItem).min(1), // the probes and their FV outputs
+    accuracy: z.number().optional(), // task accuracy, e.g. 0.36
     notes: z.string().optional(), // optional author note
   }),
 });

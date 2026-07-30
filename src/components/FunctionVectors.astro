@@ -1,0 +1,207 @@
+---
+import { getCollection } from 'astro:content';
+
+const order = { works: 0, 'half-works': 1, breaks: 2 } as const;
+const cases = (await getCollection('fvCases'))
+  .map((e) => e.data)
+  .sort((a, b) => order[a.kind] - order[b.kind]);
+
+const kindLabel: Record<(typeof cases)[number]['kind'], string> = {
+  works: 'It works',
+  'half-works': 'Half works',
+  breaks: 'Where it breaks',
+};
+---
+
+<section class="fv" data-revealed="false">
+  <div class="fv-controls">
+    <label for="fv-task">Task</label>
+    <select id="fv-task">
+      {
+        cases.map((c, i) => (
+          <option value={c.id} selected={i === 0}>
+            {c.task}
+          </option>
+        ))
+      }
+    </select>
+    <button type="button" id="fv-reveal" aria-pressed="false">Reveal correct answers</button>
+  </div>
+
+  {
+    cases.map((c, i) => (
+      <article class="fv-case" data-id={c.id} hidden={i !== 0}>
+        <p class="fv-meta">
+          <span class={`fv-badge fv-${c.kind}`}>{kindLabel[c.kind]}</span>
+          {c.accuracy !== undefined && (
+            <span class="muted"> · {Math.round(c.accuracy * 100)}% correct</span>
+          )}
+        </p>
+        <p class="fv-desc">{c.description}</p>
+        <ul class="fv-items">
+          {c.items.map((it) => (
+            <li class={it.correct ? 'hit' : 'miss'}>
+              <span class="fv-input">{it.input}</span>
+              <span class="fv-arrow" aria-hidden="true">
+                →
+              </span>
+              <span class="fv-out">{it.fvOutput}</span>
+              <span class="fv-reveal-only">
+                <span class="fv-mark" aria-hidden="true">
+                  {it.correct ? '✓' : '✗'}
+                </span>
+                {!it.correct && (
+                  <span class="fv-expected">
+                    expected <strong>{it.expected}</strong>
+                    {it.failureMode && <em class="fv-fmode"> ({it.failureMode})</em>}
+                  </span>
+                )}
+                <span class="sr-only">
+                  {it.correct ? 'correct' : `incorrect, expected ${it.expected}`}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+        {c.notes && <p class="fv-notes muted">{c.notes}</p>}
+      </article>
+    ))
+  }
+</section>
+
+<script>
+  // ponytail: single-instance assumption. This is the one island, used once per
+  // page. If ever reused, switch to querySelectorAll('.fv').forEach(...).
+  const root = document.querySelector<HTMLElement>('.fv');
+  if (root) {
+    const select = root.querySelector<HTMLSelectElement>('#fv-task')!;
+    const reveal = root.querySelector<HTMLButtonElement>('#fv-reveal')!;
+    const cases = Array.from(root.querySelectorAll<HTMLElement>('.fv-case'));
+
+    const setRevealed = (on: boolean) => {
+      root.dataset.revealed = String(on);
+      reveal.setAttribute('aria-pressed', String(on));
+      reveal.textContent = on ? 'Hide correct answers' : 'Reveal correct answers';
+    };
+
+    select.addEventListener('change', () => {
+      for (const el of cases) el.hidden = el.dataset.id !== select.value;
+      setRevealed(false); // start each task unrevealed: the reveal is the user's move
+    });
+
+    reveal.addEventListener('click', () => setRevealed(root.dataset.revealed !== 'true'));
+  }
+</script>
+
+<style>
+  .fv {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-block: var(--space-4);
+  }
+  .fv-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .fv-controls label {
+    font-weight: 650;
+    font-size: var(--text-sm);
+  }
+  .fv-controls select,
+  #fv-reveal {
+    font: inherit;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  #fv-reveal {
+    margin-left: auto;
+    cursor: pointer;
+  }
+  #fv-reveal:hover {
+    border-color: var(--accent);
+  }
+  .fv-badge {
+    font-size: var(--text-sm);
+    font-weight: 650;
+    padding: 0.05em 0.5em;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .fv-works {
+    color: #2e7d32;
+  }
+  .fv-half-works {
+    color: var(--accent);
+  }
+  .fv-breaks {
+    color: #c0392b;
+  }
+  .fv-desc {
+    margin-block: var(--space-2);
+  }
+  .fv-items {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-3) 0 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .fv-items li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+  .fv-input,
+  .fv-out,
+  .fv-expected strong {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+  }
+  .fv-out {
+    padding: 0.05em 0.4em;
+    background: var(--code-bg);
+    border-radius: 4px;
+  }
+  .fv-arrow {
+    color: var(--muted);
+  }
+  .fv-mark {
+    font-weight: 700;
+  }
+  .hit .fv-mark {
+    color: #2e7d32;
+  }
+  .miss .fv-mark {
+    color: #c0392b;
+  }
+  .fv-fmode {
+    color: var(--muted);
+  }
+  .fv-notes {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  /* Reveal is a plain state swap: hide the answer column until the user asks. */
+  .fv[data-revealed='false'] .fv-reveal-only {
+    display: none;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

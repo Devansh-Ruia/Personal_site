@@ -1,20 +1,77 @@
 [
   {
-    "id": "antonyms-placeholder",
-    "task": "Antonyms (PLACEHOLDER)",
-    "description": "TODO: one line describing the task, e.g. 'Map a word to its opposite.'",
-    "contrast": {
-      "pairs": [
-        { "input": "hot", "output": "cold" },
-        { "input": "up", "output": "down" },
-        { "input": "fast", "output": "slow" }
-      ]
-    },
-    "probe": "light",
-    "unsteered": "TODO: paste the real model completion with NO function vector added.",
-    "steered": "TODO: paste the real model completion WITH the function vector added (e.g. 'dark').",
-    "layer": 0,
-    "strength": 0,
-    "notes": "PLACEHOLDER CASE. Replace every TODO with real extracted-vector data before shipping. Delete this note when done. See .claude/skills/precompute-fv."
+    "id": "country-capital",
+    "task": "Country to capital",
+    "kind": "works",
+    "description": "Given a country, name its capital.",
+    "items": [
+      { "input": "Peru", "fvOutput": "Lima", "expected": "Lima", "correct": true },
+      { "input": "Finland", "fvOutput": "Helsinki", "expected": "Helsinki", "correct": true }
+    ],
+    "notes": "k=1 items where exact match and first-token agreed, so the FV produced the full correct capital, not a lucky prefix. The clean transport demo."
+  },
+  {
+    "id": "antonym",
+    "task": "Antonym",
+    "kind": "half-works",
+    "description": "Given a word, produce its antonym.",
+    "accuracy": 0.36,
+    "items": [
+      { "input": "dense", "fvOutput": "sparse", "expected": "sparse", "correct": true },
+      { "input": "old", "fvOutput": "new", "expected": "new", "correct": true },
+      {
+        "input": "swift",
+        "fvOutput": "swift",
+        "expected": "sluggish",
+        "correct": false,
+        "failureMode": "echo"
+      },
+      {
+        "input": "push",
+        "fvOutput": "pop",
+        "expected": "pull",
+        "correct": false,
+        "failureMode": "near-miss"
+      }
+    ],
+    "notes": "Honest 36% task. Real hits beside real misses. Two failure modes in one card: echo (swift) and near-miss (push to pop, not pull)."
+  },
+  {
+    "id": "present-past",
+    "task": "Present to past tense",
+    "kind": "breaks",
+    "description": "Given a present-tense verb, produce its past tense.",
+    "items": [
+      { "input": "unite", "fvOutput": "united", "expected": "united", "correct": true },
+      {
+        "input": "give",
+        "fvOutput": "give",
+        "expected": "gave",
+        "correct": false,
+        "failureMode": "echo"
+      },
+      {
+        "input": "leave",
+        "fvOutput": "leave",
+        "expected": "left",
+        "correct": false,
+        "failureMode": "echo"
+      },
+      {
+        "input": "lift",
+        "fvOutput": "A",
+        "expected": "lifted",
+        "correct": false,
+        "failureMode": "degenerate"
+      },
+      {
+        "input": "push",
+        "fvOutput": "A",
+        "expected": "pushed",
+        "correct": false,
+        "failureMode": "degenerate"
+      }
+    ],
+    "notes": "Weakest task. The single seed-0 win (unite) sits next to echoes (give, leave) and degenerate stray tokens (lift, push emit 'A'). Matches Todd's 19.7 self-score on this task."
   }
 ]
