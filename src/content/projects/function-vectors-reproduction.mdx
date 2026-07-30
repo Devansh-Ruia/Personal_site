@@ -1,0 +1,25 @@
+---
+title: 'Function vectors reproduction'
+summary: 'A reproduction notebook for testing activation-space interventions in language models.'
+tags: ['Open pull request']
+draft: false
+---
+
+## Scope
+
+This work reproduces a function-vectors experiment as an example notebook for
+`nnsight`. The notebook is proposed in the open
+[nnsight pull request](https://github.com/ndif-team/nnsight/pull/667).
+
+The experiment treats a function vector as a causal intervention. It extracts a
+vector from traced activations, injects it at a specified location, and compares
+the resulting behavior with a baseline. A successful intervention is evidence
+about that model and setup. It is not evidence that the model stores a clean,
+human-readable category in one place.
+
+## Publication boundary
+
+The pull request is the public artifact for this project. The separate case
+viewer on this site is held because its stored examples do not yet record the
+model, intervention location, head source, scoring rule, evaluation split or
+seed, and run artifact together. Those examples are not used as evidence here.

@@ -9,11 +9,13 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint .",
+    "test": "node test/build-unconfigured.mjs && node --test test/site-output.test.mjs .codex/hooks/tests/format.test.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.0",
+    "@astrojs/sitemap": "^3.7.3",
     "astro": "^5.13.0"
   },
   "devDependencies": {
